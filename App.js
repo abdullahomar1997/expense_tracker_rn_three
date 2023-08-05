@@ -1,20 +1,56 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from "react";
+import { createStackNavigator } from "@react-navigation/stack";
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+ 
+import { Home } from "./screens/";
+import * as Font from 'expo-font';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+const theme = {
+    ...DefaultTheme,
+    colors: {
+        ...DefaultTheme.colors,
+        border: "transparent",
+    },
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const Stack = createStackNavigator();
+
+const App = () => {
+
+    const [fontLoaded, setFontLoaded] = useState(false);
+
+    useEffect(() => {
+        // Load the custom font asynchronously
+        const loadFont = async () => {
+          await Font.loadAsync({
+            'Roboto-Regular': require('./assets/fonts/Roboto-Regular.ttf'),
+            'Roboto-Black': require('./assets/fonts/Roboto-Black.ttf'),
+            'Roboto-Bold': require('./assets/fonts/Roboto-Bold.ttf'),
+            // Add more custom fonts here if needed
+          });
+          setFontLoaded(true);
+        };
+    
+        loadFont();
+      }, []);
+
+      if (!fontLoaded) {
+        // Return a loading screen or null while the font is loading
+        return null;
+      }
+
+    return (
+        <NavigationContainer theme={theme}>
+            <Stack.Navigator
+                screenOptions={{
+                    headerShown: false
+                }}
+                initialRouteName={'Home'}
+            >
+                <Stack.Screen name="Home" component={Home} />
+            </Stack.Navigator>
+        </NavigationContainer>
+    );
+};
+
+export default App;
